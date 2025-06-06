@@ -37,15 +37,47 @@ class Square extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.yellow.withOpacity(0.5) : color,
-          border: Border.all(color: Colors.black12),
+          color: isSelected ? const Color(0xFF7dd3fc).withOpacity(0.8) : color,
+          boxShadow:
+              isSelected
+                  ? [
+                    BoxShadow(
+                      color: const Color(0xFF7dd3fc).withOpacity(0.6),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ]
+                  : null,
         ),
-        child: Center(
-          child: Text(
-            display,
-            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.black.withOpacity(0.1),
+              width: 0.5,
+            ),
+          ),
+          child: Center(
+            child: AnimatedScale(
+              scale: isSelected ? 1.1 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: Text(
+                display,
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w600,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withOpacity(0.3),
+                      offset: const Offset(1, 1),
+                      blurRadius: 2,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
