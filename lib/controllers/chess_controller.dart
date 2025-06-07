@@ -8,7 +8,7 @@ class ChessController extends GetxController {
   var inCheck = false.obs;
   var gameOver = false.obs;
   var currentTurn = ch.Color.WHITE.obs;
-  var gameStatus = ''.obs; // Reactive game status variable
+  var gameStatus = ''.obs;
 
   @override
   void onInit() {
@@ -17,7 +17,6 @@ class ChessController extends GetxController {
   }
 
   void loadBoard() {
-    // Convert the 2D board representation to a 1D list for GridView
     final newBoard = List<ch.Piece?>.filled(64, null);
     for (var rank = 0; rank < 8; rank++) {
       for (var file = 0; file < 8; file++) {
@@ -27,11 +26,10 @@ class ChessController extends GetxController {
         newBoard[rank * 8 + file] = piece;
       }
     }
-    board.assignAll(newBoard); // Use assignAll for reactive update
+    board.assignAll(newBoard);
     inCheck.value = _game.in_check;
     gameOver.value = _game.game_over;
-    currentTurn.value = _game.turn; // Update turn reactively
-    // Assign game status to the reactive variable
+    currentTurn.value = _game.turn;
     gameStatus.value =
         _game.in_checkmate
             ? "${_game.turn == ch.Color.WHITE ? 'Black' : 'White'} wins by checkmate!"
@@ -48,25 +46,23 @@ class ChessController extends GetxController {
     try {
       final piece = _game.get(square);
       if (selectedSquare.value == null) {
-        // Select a piece if it belongs to the current player
         if (piece != null && piece.color == _game.turn) {
           selectedSquare.value = square;
-          update(); // Trigger UI update
+          update();
         }
       } else {
-        // Attempt to make a move
         final move = {'from': selectedSquare.value!, 'to': square};
         final isValidMove = _game.move(move);
         if (isValidMove) {
           loadBoard();
         }
         selectedSquare.value = null;
-        update(); // Trigger UI update
+        update();
       }
     } catch (e) {
       print("Error processing move: $square | Error: $e");
       selectedSquare.value = null;
-      update(); // Trigger UI update
+      update();
     }
   }
 
