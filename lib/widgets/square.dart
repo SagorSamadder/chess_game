@@ -5,6 +5,7 @@ class Square extends StatelessWidget {
   final String? pieceSymbol;
   final VoidCallback onTap;
   final bool isSelected;
+  final bool isSuggested;
 
   const Square({
     super.key,
@@ -12,6 +13,7 @@ class Square extends StatelessWidget {
     required this.pieceSymbol,
     required this.onTap,
     required this.isSelected,
+    required this.isSuggested,
   });
 
   String get display {
@@ -52,33 +54,55 @@ class Square extends StatelessWidget {
                   ]
                   : null,
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.black.withOpacity(0.1),
-              width: 0.5,
-            ),
-          ),
-          child: Center(
-            child: AnimatedScale(
-              scale: isSelected ? 1.1 : 1.0,
-              duration: const Duration(milliseconds: 200),
-              child: Text(
-                display,
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.w600,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.3),
-                      offset: const Offset(1, 1),
-                      blurRadius: 2,
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black.withOpacity(0.1),
+                  width: 0.5,
+                ),
+              ),
+              child: Center(
+                child: AnimatedScale(
+                  scale: isSelected ? 1.1 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Text(
+                    display,
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w600,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.3),
+                          offset: const Offset(1, 1),
+                          blurRadius: 2,
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+            if (isSuggested)
+              Center(
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white54,
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
