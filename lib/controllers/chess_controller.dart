@@ -9,11 +9,33 @@ class ChessController extends GetxController {
   var gameOver = false.obs;
   var currentTurn = ch.Color.WHITE.obs;
   var gameStatus = ''.obs;
+  var showModeSelection = true.obs;
+  var isSinglePlayer = false.obs;
+  var suggestedMoves = <String>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     loadBoard();
+  }
+
+  void startSinglePlayerMode() {
+    isSinglePlayer.value = true;
+    showModeSelection.value = false;
+    resetGame();
+  }
+
+  void startTwoPlayerMode() {
+    isSinglePlayer.value = false;
+    showModeSelection.value = false;
+    resetGame();
+  }
+
+  void resetGame() {
+    _game.reset();
+    loadBoard();
+    suggestedMoves.clear();
+    selectedSquare.value = null;
   }
 
   void loadBoard() {
@@ -40,6 +62,39 @@ class ChessController extends GetxController {
             : _game.in_check
             ? "Check!"
             : "${_game.turn == ch.Color.WHITE ? 'White' : 'Black'} to move";
+    if (isSinglePlayer.value &&
+        _game.turn == ch.Color.BLACK &&
+        !gameOver.value) {
+      _makeBotMove();
+    }
+  }
+
+  void _makeBotMove() {
+    final moves = _game.generate_moves();
+    if (moves.isNotEmpty) {
+      moves.shuffle();
+      final move = moves.first;
+      _game.move({
+        'from': move.from, // Changed from move['from'] to move.from
+        'to': move.to, // Changed from move['to'] to move.to
+      });
+      loadBoard();
+    }
+  }
+
+  void _generateMoveSuggestions(String square) {
+    suggestedMoves.clear();
+    final piece = _game.get(square);
+    if (piece == null || piece.color != _game.turn) return;
+    final moves = _game.generate_moves();
+    for (var move in moves) {
+      if (move.from == square) {
+        // Changed from move['from'] to move.from
+        suggestedMoves.add(
+          move.to.toString(),
+        ); // Changed from move['to'] to move.to
+      }
+    }
   }
 
   void onSquareTapped(String square) {
@@ -48,6 +103,7 @@ class ChessController extends GetxController {
       if (selectedSquare.value == null) {
         if (piece != null && piece.color == _game.turn) {
           selectedSquare.value = square;
+          _generateMoveSuggestions(square);
           update();
         }
       } else {
@@ -57,11 +113,13 @@ class ChessController extends GetxController {
           loadBoard();
         }
         selectedSquare.value = null;
+        suggestedMoves.clear();
         update();
       }
     } catch (e) {
       print("Error processing move: $square | Error: $e");
       selectedSquare.value = null;
+      suggestedMoves.clear();
       update();
     }
   }
